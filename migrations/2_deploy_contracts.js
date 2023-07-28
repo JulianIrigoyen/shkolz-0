@@ -9,7 +9,6 @@ const PoapInterface = artifacts.require("PoapInterface");
 const ShkolDevelopment = artifacts.require("ShkolDevelopment");
 
 module.exports = function(deployer) {
-  // Deploy the contracts in the correct order
   deployer.deploy(ShkolFactory)
     .then(() => deployer.deploy(ShkolHelper))
     .then(() => deployer.deploy(PoapInterface))
