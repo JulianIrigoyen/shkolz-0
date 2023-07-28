@@ -40,12 +40,12 @@ contract ShkolFactory is Ownable {
 
 
     function _createShkol(string memory _name, uint _dna) internal {
-    shkolz.push(Shkol(_name, _dna, uint32(block.timestamp + cooldownTime), 0, 0, 0));
-    uint id = shkolz.length - 1;
-    shkolToOwner[id] = msg.sender;
-    ownerToShkolCount[msg.sender]++;
-    emit NewShkol(id, _name, msg.sender);
-}
+        shkolz.push(Shkol(_name, _dna, uint32(block.timestamp + cooldownTime), 0, 0, 0));
+        uint id = shkolz.length - 1;
+        shkolToOwner[id] = msg.sender;
+        ownerToShkolCount[msg.sender]++;
+        emit NewShkol(id, _name, msg.sender);
+    }
 
 
     function _generateRandomDna(string memory _str) private view returns (uint) {
