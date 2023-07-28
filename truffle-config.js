@@ -41,14 +41,12 @@
  * https://trufflesuite.com/docs/truffle/getting-started/using-the-truffle-dashboard/
  */
 
-// require('dotenv').config();
-// const { MNEMONIC, PROJECT_ID } = process.env;
+require('dotenv').config();
+const { x58_MNEMONIC, LOOM_PRIVATE_KEY } = process.env;
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 
-//Initialize LoomTruffleProvider
-// NEEDS npm install loom-truffle-provider --save
-//LOOM CONF, SEE LOOM DOCS & https://cryptozombies.io/en/lesson/10/chapter/8
+//Initialize LoomTruffleProvider - https://cryptozombies.io/en/lesson/10/chapter/8
 const LoomTruffleProvider = require('loom-truffle-provider');
 
 
@@ -99,9 +97,9 @@ module.exports = {
     sepolia: {
       provider: () => new HDWalletProvider({
       mnemonic: {
-      phrase: "ankle try nation shuffle rare common error payment auto maid torch equal"
+      phrase: x58_MNEMONIC
       },
-      providerOrUrl: "https://sepolia.infura.io/v3/69fe99f7f2844f2baa81c52c930b4c9c"
+      providerOrUrl: INFURA_HTTPS_PROVIDER_SEPOLIA
       }),
       network_id: 10001, // Sepolia's network ID
       gas: 4000000, // Adjust the gas limit as per your requirements
@@ -127,7 +125,7 @@ module.exports = {
   // 
   loom_testnet: {
     provider: function() {
-      const privateKey = 'Oo5SKhTjMuUOizQjXtLknJzib90='
+      const privateKey = LOOM_PRIVATE_KEY
       const chainId = 'extdev-plasma-us1';
       const writeUrl = 'http://extdev-plasma-us1.dappchains.com:80/rpc';
       const readUrl = 'http://extdev-plasma-us1.dappchains.com:80/query';

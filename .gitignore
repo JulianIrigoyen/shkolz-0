@@ -1,2 +1,5 @@
-.env
+.git/
+.gitignore
+client/
 node_modules
+.env
