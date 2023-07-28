@@ -6,22 +6,40 @@ import {SafeMath32} from "./util/SafeMath32.sol";
 
 contract ShkolHelper is ShkolDevelopment {
     using SafeMath32 for uint32;
+
     uint levelUpFee = 0.000001 ether;
-    //todo think of how to implement validations
     uint shkillValidationFee = 0.0000001 ether;
 
-    modifier aboveLevel(uint _level, uint _shkolId) {
+    function getLevelUpFee() external view returns (uint) {
+        return levelUpFee;
+    }
+
+    function getValidationFee() external view returns (uint) {
+        return shkillValidationFee;
+    }
+
+    //todo
+    modifier aboveLevel(
+        uint _level,
+        uint _shkolId,
+        uint _shkillId
+    ) {
         require(shkolz[_shkolId].level >= _level);
         _;
     }
 
-    function withdraw() external onlyOwner {
+    function withdraw() external payable onlyOwner {
+        uint256 balance = address(this).balance;
         address payable _owner = payable(owner());
-        _owner.transfer(address(this).balance);
+        _owner.transfer(balance);
     }
 
     function setLevelUpFee(uint _fee) external onlyOwner {
         levelUpFee = _fee;
+    }
+
+    function setValidationFee(uint _fee) external onlyOwner {
+        shkillValidationFee = _fee;
     }
 
     function levelUp(uint _shkolId) external payable {
@@ -29,24 +47,30 @@ contract ShkolHelper is ShkolDevelopment {
         shkolz[_shkolId].level = shkolz[_shkolId].level.add(1);
     }
 
-    //todo think of how to implement validations, maybe counting fixed votes
     function validateShkill(uint _shkolId, uint _shkillId) external payable {
         require(msg.value == shkillValidationFee);
-        //this would advance the shkill level for that shkoll
         shkolz[_shkolId].level = shkolz[_shkolId].level.add(1);
     }
 
     function changeName(
         uint _shkolId,
         string calldata _newName
-    ) external aboveLevel(2, _shkolId) onlyOwnerOf(_shkolId) {
+    ) external onlyOwnerOf(_shkolId) {
         shkolz[_shkolId].name = _newName;
     }
 
     function changeDna(
         uint _shkolId,
         uint _newDna
-    ) external aboveLevel(20, _shkolId) onlyOwnerOf(_shkolId) {
+    ) external payable onlyOwnerOf(_shkolId) {
+        require(
+            msg.value >= 1 ether,
+            "Changing DNA requires at least 1 ether payment"
+        );
+        require(
+            _newDna >= 1e15 && _newDna < 1e16,
+            "DNA must always be 16 digits"
+        );
         shkolz[_shkolId].dna = _newDna;
     }
 

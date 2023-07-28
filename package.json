@@ -13,6 +13,9 @@
   "license": "ISC",
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.2",
+    "@openzeppelin/test-helpers": "^0.5.16",
+    "chai": "^4.3.7",
+    "uws": "^200.0.0",
     "web3": "^4.0.3"
   }
 }

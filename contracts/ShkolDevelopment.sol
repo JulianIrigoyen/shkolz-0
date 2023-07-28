@@ -58,15 +58,27 @@ contract ShkolDevelopment is ShkolFactory {
         _triggerShkolCooldown(myShkol);
     }
 
-    function assignShkillToShkol(uint _shkolId, uint _shkillId) public onlyOwnerOf(_shkolId) {
+    function assignShkillToShkol(
+        uint _shkolId,
+        uint _shkillId
+    ) public onlyOwnerOf(_shkolId) {
         require(_shkillId < shkillz.length, "Shkill does not exist");
+        require(
+            shkolIdToShkillLevel[_shkolId][_shkillId] == 0,
+            "Shkill already assigned"
+        );
         shkolIdToShkillLevel[_shkolId][_shkillId] = 1;
         emit ShkillAssigned(_shkolId, _shkillId);
     }
 
-    function levelUpShkill(uint _shkolId, uint _shkillId) public onlyOwnerOf(_shkolId) {
+    function levelUpShkill(
+        uint _shkolId,
+        uint _shkillId
+    ) public onlyOwnerOf(_shkolId) {
         require(_shkillId < shkillz.length, "Shkill does not exist");
-        shkolIdToShkillLevel[_shkolId][_shkillId] = shkolIdToShkillLevel[_shkolId][_shkillId].add(1);
+        shkolIdToShkillLevel[_shkolId][_shkillId] = shkolIdToShkillLevel[
+            _shkolId
+        ][_shkillId].add(1);
         emit ShkillLeveledUp(
             _shkolId,
             _shkillId,
