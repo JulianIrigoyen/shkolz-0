@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import {ShkolFactory} from "./ShkolFactory.sol";
+import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract PoapInterface {
     //todo develop poap interface
@@ -9,8 +10,10 @@ contract PoapInterface {
 }
 
 contract ShkolDevelopment is ShkolFactory {
-    event SkillAssigned(uint indexed shkolId, uint indexed shkillId);
-    event SkillLeveledUp(
+    using SafeMath for uint;
+
+    event ShkillAssigned(uint indexed shkolId, uint indexed shkillId);
+    event ShkillLeveledUp(
         uint indexed shkolId,
         uint indexed shkillId,
         uint newLevel
@@ -35,26 +38,17 @@ contract ShkolDevelopment is ShkolFactory {
         return (_shkol.readyTime <= block.timestamp);
     }
 
-    //todo think of how to enforce character progression of a shkol
-    //todo in terms of the shkills he acquires
-    //todo for example network validation:
-    // artists? enough people go to your concert and validate you, you can level up.
-    // cooks? people validate your food
-    // handymans? people validate your handydooers
-    // doctor? professor? lawayer? you name it
-    // designers
     function advanceShkill(
         uint _shkolId,
         uint shkillId,
         string memory _shkillType
-    ) internal onlyOwnerOf(_shkolId) {
+    ) public onlyOwnerOf(_shkolId) {
         Shkol storage myShkol = shkolz[_shkolId];
         require(_isReady(myShkol));
         uint targetDna = shkillId % dnaModulus;
-        uint newDna = (myShkol.dna + targetDna) / 2;
+        uint newDna = (myShkol.dna.add(targetDna)).div(2);
 
         if (
-            // here we'd define handlers for each case
             keccak256(abi.encodePacked(_shkillType)) ==
             keccak256(abi.encodePacked("designer"))
         ) {
@@ -64,26 +58,16 @@ contract ShkolDevelopment is ShkolFactory {
         _triggerShkolCooldown(myShkol);
     }
 
-    function assignSkillToShkol(uint _shkolId, uint _shkillId) public {
-        require(
-            msg.sender == shkolToOwner[_shkolId],
-            "Caller must own the Shkol"
-        );
-        require(_shkolId < shkolz.length, "Shkol does not exist");
+    function assignShkillToShkol(uint _shkolId, uint _shkillId) public onlyOwnerOf(_shkolId) {
         require(_shkillId < shkillz.length, "Shkill does not exist");
         shkolIdToShkillLevel[_shkolId][_shkillId] = 1;
-        emit SkillAssigned(_shkolId, _shkillId);
+        emit ShkillAssigned(_shkolId, _shkillId);
     }
 
-    function levelUpSkill(uint _shkolId, uint _shkillId) public {
-        require(
-            msg.sender == shkolToOwner[_shkolId],
-            "Caller must own the Shkol"
-        );
-        require(_shkolId < shkolz.length, "Shkol does not exist");
+    function levelUpShkill(uint _shkolId, uint _shkillId) public onlyOwnerOf(_shkolId) {
         require(_shkillId < shkillz.length, "Shkill does not exist");
-        shkolIdToShkillLevel[_shkolId][_shkillId] += 1;
-        emit SkillLeveledUp(
+        shkolIdToShkillLevel[_shkolId][_shkillId] = shkolIdToShkillLevel[_shkolId][_shkillId].add(1);
+        emit ShkillLeveledUp(
             _shkolId,
             _shkillId,
             shkolIdToShkillLevel[_shkolId][_shkillId]
